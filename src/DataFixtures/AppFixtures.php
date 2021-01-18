@@ -8,7 +8,6 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Security\Http\Authenticator\Passport\UserPassportInterface;
 
 class AppFixtures extends Fixture
 {
@@ -23,22 +22,24 @@ class AppFixtures extends Fixture
         for($i =0; $i < 20; $i++)
         {
             $user = new User();
-            $password = $this->encoder->encodePassword($user, 'password');
+            //$password = $this->encoder->encodePassword($user, 'password');
             $user
                 ->setFirstName($generator->firstName())
                 ->setLastName($generator->lastName)
                 ->setEmail($generator->email)
-                ->setPassword($password);
+                //->setPassword($password);
+                ->setPassword($this->encoder->encodePassword($user, "123456"));
              $manager->persist($user);
              for($j = 0; $j < rand (10,50); $j++){
                  $news = new News();
                  $news
                  ->setTitle($generator->sentence)
-                 ->setContent($generator->text()) 
+                 ->setContent($generator->text(2000)) 
                  ->setStatus(
                      $generator->randomElement(['DRAFT', 'PUBLISHED', 'DELETED'])
                  )
                  ->setCreatedAt($generator->dateTimeBetween('-1 year', 'now'))
+                 ->setImgUrl($generator->imageUrl(750, 500))
                  ->setUser($user);
                 $manager->persist($news);
             }
